@@ -1,6 +1,6 @@
 param
-  grammaticalNumber = singular | plural ;
-  grammaticalCase = nominative | genitive | partitive | illative | inessive | elative | allative | adessive | ablative | translative | terminative | comitative ;
+  Number = Sg | Pl ;
+  Case = nominative | genitive | partitive | illative | inessive | elative | allative | adessive | ablative | translative | terminative | comitative ;
 
 oper
   mkAa : Str -> Noun =  \aa -> 

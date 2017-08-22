@@ -8,10 +8,12 @@ declare function p:serialize-params ($params-map) as xs:string {
   string-join(
     ("param",
     for $feature in map:keys($params-map)
-      let $values := string-join($params-map?($feature), " | ")
+      let $values := string-join(
+                                    for $value in $params-map?($feature)
+                                       return if ($translate?($value)) then ($translate?($value)) else ($value),
+                              " | ")
       return concat(
-       (:  "  ", $feature, " : Type ;", out:nl(), :)
-        "  ", $feature, " = ", $values, " ;")
+        "  ", if($translate?($feature)) then($translate?($feature)) else ($feature), " = ", $values, " ;")
     )
   , out:nl()
   )
