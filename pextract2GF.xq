@@ -27,7 +27,9 @@ declare function p:serialize-params ($params-map) as xs:string {
 (:~ Simple translation map for stuff like 'singular' = 'Sg' :)
 declare variable $translate := map {
   "singular" : "Sg",
-  "plural"     : "Pl"
+  "plural"     : "Pl",
+  "grammaticalNumber" : "Number",
+  "grammaticalCase"      : "Case"
 };
 
 (:~ Serialize the paradigm patterns as GF operations :)
