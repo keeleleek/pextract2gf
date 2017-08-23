@@ -90,17 +90,44 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
                       _ => Predef.error "Given lemma doesn't pattern match this paradigm function >:("
                     }
               :)
-              "    let "
-              (: placeholder for variable instantiations :)
-              ,"      case " || out:nl()
-              (: placeholder for lemma instantiation :)
-              , "      of {" || out:nl()
-              (: placeholder for pattern matching :)
-              
-              (: footer of let clause :)
-              , "    }" || out:nl()
-              , "    in" || out:nl()
+              "  mk" || functx:capitalize-first(
+                              p:reconstruct-wordform(
+                                  ($paradigm//p:paradigm-cell)[1], (: @todo remove hardcoded selector :)
+                                  $paradigm//p:variable-values
+                              )
+                        ) || " : Str -> Noun = \"  || p:reconstruct-wordform(
+                                  ($paradigm//p:paradigm-cell)[1], (: @todo remove hardcoded selector :)
+                                  $paradigm//p:variable-values
+                              ),
+                        " -> " || out:nl(),
+                        "    case " || p:reconstruct-wordform(
+                                  ($paradigm//p:paradigm-cell)[1], (: @todo remove hardcoded selector :)
+                                  $paradigm//p:variable-values
+                              ),
+                        " of {" || out:nl(),
+                        (: placeholder for tüt + "t" + ö => mkTüttöConcrete tüt ö :)
+                        "      ",
+                        string-join(
+                            let $paradigm-pattern := ($paradigm//p:paradigm-cell)[1]
+                            for $pattern-part in $paradigm-pattern//p:pattern/p:pattern-part/data()
+                              return 
+                                if (matches($pattern-part, "\D+"))
+                                then(string('"' || $pattern-part || '"'))
+                                else(string($first-attested-variables-map?($pattern-part)[1]))
+                            , " + "
+                        ) || out:nl(),
+                        (: useful error message :)
+                        '      _ => Predef.error "Unsuitable lemma for ',
+                        "mk" || functx:capitalize-first(
+                              p:reconstruct-wordform(
+                                  ($paradigm//p:paradigm-cell)[1], (: @todo remove hardcoded selector :)
+                                  $paradigm//p:variable-values
+                              )
+                        ) || '"',
+                        out:nl(),
+                        "    }" || out:nl() || out:nl()
             ),
+            
             (: generate code for the concrete paradigm-function :)
             concat("  mk",
                         functx:capitalize-first(
@@ -113,7 +140,7 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
                         (: string-join("Str", " -> ") for $num-of-variables :)
                         string-join(for $i in 1 to $num-of-variables return "Str", " -> "),
                         " -> Noun = ", (: @todo remove hardcoded POS :)
-                        " \", (: the lambda definition :) 
+                        "\", (: the lambda definition :) 
                         (: tü,tö :)
                         string-join(for $variable in $distinct-variables
                                           return $first-attested-variables-map?($variable)[1], ","),
