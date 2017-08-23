@@ -115,7 +115,22 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
                                 then(string('"' || $pattern-part || '"'))
                                 else(string($first-attested-variables-map?($pattern-part)[1]))
                             , " + "
-                        ) || out:nl(),
+                        ) || " => " || "mk" || functx:capitalize-first(
+                                  p:reconstruct-wordform(
+                                      ($paradigm//p:paradigm-cell)[1], (: @todo remove hardcoded selector :)
+                                      $paradigm//p:variable-values
+                                  ) || "Concrete "
+                        ),
+                        string-join(
+                            let $paradigm-pattern := ($paradigm//p:paradigm-cell)[1]
+                            for $pattern-part in $paradigm-pattern//p:pattern/p:pattern-part/data()
+                              return 
+                                if (matches($pattern-part, "\D+"))
+                                then()
+                                else(string($first-attested-variables-map?($pattern-part)[1]))
+                            , " "
+                        )
+                        , " ; " || out:nl(),
                         (: useful error message :)
                         '      _ => Predef.error "Unsuitable lemma for ',
                         "mk" || functx:capitalize-first(
@@ -125,7 +140,7 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
                               )
                         ) || '"',
                         out:nl(),
-                        "    }" || out:nl() || out:nl()
+                        "    } ;" || out:nl() || out:nl()
             ),
             
             (: generate code for the concrete paradigm-function :)
@@ -154,6 +169,8 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
             string-join( for $paradigm-pattern in $paradigm//p:paradigm-cell
               return
                 concat(
+                  (: @todo we could insert the wordform as documentation here but it seems unnecessary
+                  "        -- " || p:reconstruct-wordform($paradigm-pattern, $paradigm//p:variable-values) || out:nl(), :)
                   (: msd-description serialized as NF Pl genitive => :)
                   "        NF ",
                   string-join(
@@ -175,9 +192,8 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
                         then(string('"' || $pattern-part || '"'))
                         else(string($first-attested-variables-map?($pattern-part)[1]))
                     , " + ")
-                , " ; -- " || p:reconstruct-wordform($paradigm-pattern, $paradigm//p:variable-values)
                 )
-            , out:nl() ) (: end of table content string-join :)
+            , " ; " || out:nl() ) (: end of table content string-join :)
             , out:nl()
             , "      }", out:nl()
             , "    } ;", out:nl()
