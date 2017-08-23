@@ -84,13 +84,9 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
             concat("  mk",
                         functx:capitalize-first(
                               p:reconstruct-wordform(
-                                ($paradigm//p:paradigm-cell)[1], (: @todo remove hardcoded selector :)
-                                $paradigm//p:variable-values
-                              )
-                              (:
-                              string-join(for $variable in $distinct-variables
-                                                return $first-attested-variables-map?($variable)[1])
-                              :)
+                                  ($paradigm//p:paradigm-cell)[1], (: @todo remove hardcoded selector :)
+                                  $paradigm//p:variable-values
+                              ) || "Concrete"
                         ),
                         " : ",
                         (: string-join("Str", " -> ") for $num-of-variables :)
