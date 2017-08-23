@@ -3,6 +3,33 @@ declare namespace map = "http://www.w3.org/2005/xpath-functions/map";
 import module namespace functx = 'http://www.functx.com';
 declare namespace p = "http://keeleleek.ee/pextract";
 
+
+
+(:~ Reconstruct the wordform of a paradigm-cell :)
+declare function p:reconstruct-wordform (
+  $paradigm-cell as element(p:paradigm-cell),
+  $attested-variables as element(p:variable-values)
+) as xs:string
+{
+  let $distinct-variables := distinct-values($paradigm-cell//p:pattern-part[matches(., "\d+")])
+  let $first-attested-variables-map := map:merge(
+      for $variable-num in $distinct-variables
+        let $first-attested-variable
+            := $attested-variables//p:variable[./p:variable-number = $variable-num]/p:variable-value/data()
+        return map:entry($variable-num, $first-attested-variable)
+  )
+  return
+    string-join(
+            for $pattern-part in $paradigm-cell//p:pattern/p:pattern-part/data()
+              return 
+                if (matches($pattern-part, "\D+"))
+                then(string($pattern-part))
+                else(string($first-attested-variables-map?($pattern-part)[1]))
+    )
+};
+
+
+
 (:~ Serialize the $params-map as a GF param statement :)
 declare function p:serialize-params ($params-map) as xs:string {
   string-join(
@@ -20,11 +47,6 @@ declare function p:serialize-params ($params-map) as xs:string {
 };
 
 
-(: get number of variables :)
-(: get ordered constants :)
-(: use constants in a smart paradigm :)
-(: use a dummy in a placeholder for attested variables :)
-(: generate documentation strings :)
 
 (:~ Simple translation map for stuff like 'singular' = 'Sg' :)
 declare variable $translate := map {
@@ -34,13 +56,15 @@ declare variable $translate := map {
   "grammaticalCase"      : "Case"
 };
 
+
+
 (:~ Serialize the paradigm patterns as GF operations :)
 declare function p:serialize-opers ($pattern-map) as xs:string {
   let $pfile := doc("examples/vot_noun.tdml")
   
   return
   string-join(
-    ("oper",
+    ("oper" || out:nl(),
     string-join(
       for $paradigm in ($pfile//p:paradigm)
         let $distinct-variables := distinct-values($paradigm//p:pattern-part[matches(., "\d+")])
@@ -59,13 +83,19 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
             (: name of the paradigm-function :)
             concat("  mk",
                         functx:capitalize-first(
+                              p:reconstruct-wordform(
+                                ($paradigm//p:paradigm-cell)[1], (: @todo remove hardcoded selector :)
+                                $paradigm//p:variable-values
+                              )
+                              (:
                               string-join(for $variable in $distinct-variables
                                                 return $first-attested-variables-map?($variable)[1])
+                              :)
                         ),
                         " : ",
                         (: string-join("Str", " -> ") for $num-of-variables :)
                         string-join(for $i in 1 to $num-of-variables return "Str", " -> "),
-                        " -> Noun = ", (: @todo hardcoded POS :)
+                        " -> Noun = ", (: @todo remove hardcoded POS :)
                         " \", (: the lambda definition :) 
                         (: tü,tö :)
                         string-join(for $variable in $distinct-variables
@@ -100,15 +130,17 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
                         then(string('"' || $pattern-part || '"'))
                         else(string($first-attested-variables-map?($pattern-part)[1]))
                     , " + ")
+                , " ; -- " || p:reconstruct-wordform($paradigm-pattern, $paradigm//p:variable-values)
                 )
-            , " ; " || out:nl() ) (: end of table content string-join :)
+            , out:nl() ) (: end of table content string-join :)
             , out:nl()
             , "      }", out:nl()
             , "    } ;", out:nl()
           )
         
         return $GF-wordform-table
-    , out:nl() || out:nl() || "-------------------------" || out:nl() || out:nl())
+        
+    || out:nl() || out:nl() || "-------------------------" || out:nl() || out:nl())
     )
     , out:nl()
   )
