@@ -113,6 +113,16 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
               { s = 
                 table {
             :)
+            , "    let "
+            (: placeholder for variable instantiations :)
+            ,"      case " || out:nl()
+            (: placeholder for lemma instantiation :)
+            , "      of {" || out:nl()
+            (: placeholder for pattern matching :)
+            
+            (: footer of let clause :)
+            , "    }" || out:nl()
+            , "    in" || out:nl()
             (: record with inflection table :)
             ,"    { s = ", out:nl(),
             "      table {", out:nl(),
