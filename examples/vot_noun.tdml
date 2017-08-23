@@ -52,6 +52,22 @@
       <pextract:paradigm-cell>
         <pextract:pattern>
           <pextract:pattern-part>1</pextract:pattern-part>
+          <pextract:pattern-part>põje</pextract:pattern-part>
+        </pextract:pattern>
+        <pextract:msd-description>
+          <pextract:feature>
+            <pextract:name>grammaticalNumber</pextract:name>
+            <pextract:value>plural</pextract:value>
+          </pextract:feature>
+          <pextract:feature>
+            <pextract:name>grammaticalCase</pextract:name>
+            <pextract:value>genitive</pextract:value>
+          </pextract:feature>
+        </pextract:msd-description>
+      </pextract:paradigm-cell>
+      <pextract:paradigm-cell>
+        <pextract:pattern>
+          <pextract:pattern-part>1</pextract:pattern-part>
           <pextract:pattern-part>pa</pextract:pattern-part>
         </pextract:pattern>
         <pextract:msd-description>

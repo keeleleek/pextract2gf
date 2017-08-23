@@ -3,12 +3,20 @@ param
   Case = nominative | genitive | partitive | illative | inessive | elative | allative | adessive | ablative | translative | terminative | comitative ;
 
 oper
-  mkAa : Str -> Noun =  \aa -> 
+
+  mkAapõ : Str -> Noun = \aapõ -> 
+    case aapõ of {
+      aa + "põ" => mkAapõConcrete aa ; 
+      _ => Predef.error "Unsuitable lemma for mkAapõ"
+    } ;
+
+  mkAapõConcrete : Str -> Noun = \aa -> 
     { s = 
       table {
         NF Sg nominative => aa + "põ" ; 
         NF Pl nominative => aa + "võd" ; 
         NF Sg genitive => aa + "va" ; 
+        NF Pl genitive => aa + "põje" ; 
         NF Sg partitive => aa + "pa" ; 
         NF Pl partitive => aa + "poi" ; 
         NF Sg illative => aa + "paa" ; 
@@ -36,7 +44,13 @@ oper
 
 -------------------------
 
-  mkPoi : Str -> Noun =  \poi -> 
+  mkPoikõ : Str -> Noun = \poikõ -> 
+    case poikõ of {
+      poi + "kõ" => mkPoikõConcrete poi ; 
+      _ => Predef.error "Unsuitable lemma for mkPoikõ"
+    } ;
+
+  mkPoikõConcrete : Str -> Noun = \poi -> 
     { s = 
       table {
         NF Sg nominative => poi + "kõ" ; 
@@ -74,7 +88,13 @@ oper
 
 -------------------------
 
-  mkAi : Str -> Noun =  \ai -> 
+  mkAikõ : Str -> Noun = \aikõ -> 
+    case aikõ of {
+      ai + "kõ" => mkAikõConcrete ai ; 
+      _ => Predef.error "Unsuitable lemma for mkAikõ"
+    } ;
+
+  mkAikõConcrete : Str -> Noun = \ai -> 
     { s = 
       table {
         NF Sg nominative => ai + "kõ" ; 
@@ -111,7 +131,13 @@ oper
 
 -------------------------
 
-  mkAm : Str -> Noun =  \am -> 
+  mkAmmõz : Str -> Noun = \ammõz -> 
+    case ammõz of {
+      am + "mõz" => mkAmmõzConcrete am ; 
+      _ => Predef.error "Unsuitable lemma for mkAmmõz"
+    } ;
+
+  mkAmmõzConcrete : Str -> Noun = \am -> 
     { s = 
       table {
         NF Sg nominative => am + "mõz" ; 
@@ -144,7 +170,13 @@ oper
 
 -------------------------
 
-  mkTütö : Str -> Str -> Noun =  \tüt,ö -> 
+  mkTüttö : Str -> Noun = \tüttö -> 
+    case tüttö of {
+      tüt + "t" + ö => mkTüttöConcrete tüt ö ; 
+      _ => Predef.error "Unsuitable lemma for mkTüttö"
+    } ;
+
+  mkTüttöConcrete : Str -> Str -> Noun = \tüt,ö -> 
     { s = 
       table {
         NF Sg nominative => tüt + "t" + ö ; 
@@ -175,3 +207,7 @@ oper
         NF Pl comitative => tüt + "t" + ö + "ika"
       }
     } ;
+
+
+-------------------------
+
