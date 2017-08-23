@@ -102,6 +102,17 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
                                           return $first-attested-variables-map?($variable)[1], ","),
                         " -> ",
                         out:nl())
+            (: pattern match lemma as input for the concrete paradigm function :)
+            (:
+            mkPoikõ : Str -> Noun = \poikõ ->
+              let poi = case poikõ of {
+                poi + "kõ" => poi ;
+                _ => tk 2 poikõ
+              }
+              in
+              { s = 
+                table {
+            :)
             (: record with inflection table :)
             ,"    { s = ", out:nl(),
             "      table {", out:nl(),
