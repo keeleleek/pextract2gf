@@ -80,7 +80,28 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
         (: generate GF table with each paradigm-cell element :)
         let $GF-wordform-table :=
           concat(
-            (: name of the paradigm-function :)
+            (: generate code for the abstract paradigm function that acts on a lemma :)
+            concat(
+              (: pattern match lemma as input for the concrete paradigm function :)
+              (:
+                  mkTüttö : Str -> Noun = \tüttö ->
+                    case tüttö of {
+                      tüt + "t" + ö => mkTüttöConcrete tüt ö
+                      _ => Predef.error "Given lemma doesn't pattern match this paradigm function >:("
+                    }
+              :)
+              "    let "
+              (: placeholder for variable instantiations :)
+              ,"      case " || out:nl()
+              (: placeholder for lemma instantiation :)
+              , "      of {" || out:nl()
+              (: placeholder for pattern matching :)
+              
+              (: footer of let clause :)
+              , "    }" || out:nl()
+              , "    in" || out:nl()
+            ),
+            (: generate code for the concrete paradigm-function :)
             concat("  mk",
                         functx:capitalize-first(
                               p:reconstruct-wordform(
@@ -98,27 +119,7 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
                                           return $first-attested-variables-map?($variable)[1], ","),
                         " -> ",
                         out:nl())
-            (: pattern match lemma as input for the concrete paradigm function :)
-            (:
-            mkPoikõ : Str -> Noun = \poikõ ->
-              let poi = case poikõ of {
-                poi + "kõ" => poi ;
-                _ => tk 2 poikõ
-              }
-              in
-              { s = 
-                table {
-            :)
-            , "    let "
-            (: placeholder for variable instantiations :)
-            ,"      case " || out:nl()
-            (: placeholder for lemma instantiation :)
-            , "      of {" || out:nl()
-            (: placeholder for pattern matching :)
             
-            (: footer of let clause :)
-            , "    }" || out:nl()
-            , "    in" || out:nl()
             (: record with inflection table :)
             ,"    { s = ", out:nl(),
             "      table {", out:nl(),
