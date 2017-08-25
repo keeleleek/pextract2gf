@@ -4,8 +4,18 @@ import module namespace functx = 'http://www.functx.com';
 declare namespace p = "http://keeleleek.ee/pextract";
 
 
+(:~ 
+ : This converts extracted paradigms into Grammatical Framework code.
+ : 
+ : @author Kristian Keeleleek
+ : @version 1.0.0
+ : @see https://github.com/keeleleek/pextract2gf
+ :)
 
-(:~ Reconstruct the wordform of a paradigm-cell :)
+
+(:~ Reconstruct the wordform of a paradigm-cell
+ : @since 1.0.0
+ :)
 declare function p:reconstruct-wordform (
   $paradigm-cell as element(p:paradigm-cell),
   $attested-variables as element(p:variable-values)
@@ -30,7 +40,9 @@ declare function p:reconstruct-wordform (
 
 
 
-(:~ Serialize the $params-map as a GF param statement :)
+(:~ Serialize the $params-map as a GF param statement
+ : @since 1.0.0
+ :)
 declare function p:serialize-params ($params-map) as xs:string {
   string-join(
     ("param",
@@ -48,7 +60,9 @@ declare function p:serialize-params ($params-map) as xs:string {
 
 
 
-(:~ Simple translation map for stuff like 'singular' = 'Sg' :)
+(:~ Simple translation map for stuff like 'singular' = 'Sg'
+ : @since 1.0.0
+ :)
 declare variable $translate := map {
   "singular" : "Sg",
   "plural"     : "Pl",
@@ -58,7 +72,9 @@ declare variable $translate := map {
 
 
 
-(:~ Serialize the paradigm patterns as GF operations :)
+(:~ Serialize the paradigm patterns as GF operations
+ : @since 1.0.0
+ :)
 declare function p:serialize-opers ($pattern-map) as xs:string {
   let $pfile := doc("examples/vot_noun.tdml")
   
