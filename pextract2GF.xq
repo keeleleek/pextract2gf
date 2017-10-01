@@ -60,6 +60,21 @@ declare function p:serialize-params ($params-map) as xs:string {
 
 
 
+(:~ generate a simplistic Smart Paradigm :)
+(:
+  example code
+  -- Simplistic Suffix Smart Paradigm
+  mkNoun : Str -> Noun = \str ->
+    case str of {
+      _ + "põ" => mkAapõ str ;
+      _ + "kõ" => mkPoikõ str ;
+      _ + "tö" => mkTütö str ;
+      _        => Predef.error "Doesn't look like a noun >:("
+    };
+:)
+
+
+
 (:~ Simple translation map for stuff like 'singular' = 'Sg'
  : @since 1.0.0
  :)
