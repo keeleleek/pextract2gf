@@ -125,11 +125,29 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
                         "      ",
                         string-join(
                             let $paradigm-pattern := ($paradigm//p:paradigm-cell)[1]
-                            for $pattern-part in $paradigm-pattern//p:pattern/p:pattern-part/data()
+                            let $last := count($paradigm-pattern//p:pattern/p:pattern-part/data())
+                            for $pattern-part at $position in $paradigm-pattern//p:pattern/p:pattern-part/data()
                               return 
-                                if (matches($pattern-part, "\D+"))
-                                then(string('"' || $pattern-part || '"'))
-                                else(string($first-attested-variables-map?($pattern-part)[1]))
+                                (: treat the last variable differently :)
+                                if ($position ne $last)
+                                then (
+                                  (: if non-number then constant else get attestation for variable num :)
+                                  if (matches($pattern-part, "\D+"))
+                                  then(string('"' || $pattern-part || '"'))
+                                  else(string($first-attested-variables-map?($pattern-part)[1]))
+                                )
+                                else (
+                                  (: if non-number then constant else get attestation for variable num :)
+                                  if (matches($pattern-part, "\D+"))
+                                  then(string('"' || $pattern-part || '"'))
+                                  else(
+                                    (: pattern for making last constant match greedily i.e match the last occurrence :)
+                                    let $last-attested-variable := $paradigm-pattern//p:pattern/p:pattern-part[last() - 1]
+                                    return
+                                      string($first-attested-variables-map?($pattern-part)[1])
+                                      || "@" || '(-(_+"' || $last-attested-variable || '"+_))'
+                                  )
+                                )
                             , " + "
                         ) || " => " || "mk" || functx:capitalize-first(
                                   p:reconstruct-wordform(
