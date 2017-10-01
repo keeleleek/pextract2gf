@@ -172,7 +172,7 @@ oper
 
   mkTüttö : Str -> Noun = \tüttö -> 
     case tüttö of {
-      tüt + "t" + ö => mkTüttöConcrete tüt ö ; 
+      tüt + "t" + ö@(-(_+"t"+_)) => mkTüttöConcrete tüt ö ; 
       _ => Predef.error "Unsuitable lemma for mkTüttö"
     } ;
 
