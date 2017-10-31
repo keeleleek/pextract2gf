@@ -6,38 +6,12 @@ declare namespace p = "http://keeleleek.ee/pextract";
 
 
 (:~ 
- : This converts extracted paradigms into Grammatical Framework code.
+ : This converts an extracted paradigms file into Grammatical Framework code.
  : 
  : @author Kristian Keeleleek
  : @version 1.0.0
  : @see https://github.com/keeleleek/pextract2gf
  :)
-
-
-(:~ Reconstruct the wordform of a paradigm-cell
- : @since 1.0.0
- :)
-declare function p:reconstruct-wordform (
-  $paradigm-cell as element(p:paradigm-cell),
-  $attested-variables as element(p:variable-values)
-) as xs:string
-{
-  let $distinct-variables := distinct-values($paradigm-cell//p:pattern-part[matches(., "\d+")])
-  let $first-attested-variables-map := map:merge(
-      for $variable-num in $distinct-variables
-        let $first-attested-variable
-            := $attested-variables//p:variable[./p:variable-number = $variable-num]/p:variable-value/data()
-        return map:entry($variable-num, $first-attested-variable)
-  )
-  return
-    string-join(
-            for $pattern-part in $paradigm-cell//p:pattern/p:pattern-part/data()
-              return 
-                if (matches($pattern-part, "\D+"))
-                then(string($pattern-part))
-                else(string($first-attested-variables-map?($pattern-part)[1]))
-    )
-};
 
 
 
@@ -88,6 +62,10 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
         let $num-of-variables := count($distinct-variables)
         let $first-attested-variables-map := pfile:get-attested-var-values-map($paradigm)
         let $constants := ($paradigm//p:pattern-part[matches(., "\D+")])
+        let $lemma := pfile:get-attested-wordforms(
+                                  ($paradigm//p:paradigm-cell)[1], (: @todo remove hardcoded selector :)
+                                  $paradigm//p:variable-values
+                                )[1]
         
         (: generate GF table with each paradigm-cell element :)
         let $GF-wordform-table :=
@@ -103,19 +81,10 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
                     }
               :)
               "  mk" || functx:capitalize-first(
-                              p:reconstruct-wordform(
-                                  ($paradigm//p:paradigm-cell)[1], (: @todo remove hardcoded selector :)
-                                  $paradigm//p:variable-values
-                              )
-                        ) || " : Str -> Noun = \"  || p:reconstruct-wordform(
-                                  ($paradigm//p:paradigm-cell)[1], (: @todo remove hardcoded selector :)
-                                  $paradigm//p:variable-values
-                              ),
+                              $lemma
+                        ) || " : Str -> Noun = \"  || $lemma,
                         " -> " || out:nl(),
-                        "    case " || p:reconstruct-wordform(
-                                  ($paradigm//p:paradigm-cell)[1], (: @todo remove hardcoded selector :)
-                                  $paradigm//p:variable-values
-                              ),
+                        "    case " || $lemma,
                         " of {" || out:nl(),
                         (: placeholder for tüt + "t" + ö => mkTüttöConcrete tüt ö :)
                         "      ",
@@ -146,10 +115,7 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
                                 )
                             , " + "
                         ) || " => " || "mk" || functx:capitalize-first(
-                                  p:reconstruct-wordform(
-                                      ($paradigm//p:paradigm-cell)[1], (: @todo remove hardcoded selector :)
-                                      $paradigm//p:variable-values
-                                  ) || "Concrete "
+                                                             $lemma || "Concrete "
                         ),
                         string-join(
                             let $paradigm-pattern := ($paradigm//p:paradigm-cell)[1]
@@ -164,10 +130,7 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
                         (: useful error message :)
                         '      _ => Predef.error "Unsuitable lemma for ',
                         "mk" || functx:capitalize-first(
-                              p:reconstruct-wordform(
-                                  ($paradigm//p:paradigm-cell)[1], (: @todo remove hardcoded selector :)
-                                  $paradigm//p:variable-values
-                              )
+                              $lemma
                         ) || '"',
                         out:nl(),
                         "    } ;" || out:nl() || out:nl()
@@ -176,10 +139,7 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
             (: generate code for the concrete paradigm-function :)
             concat("  mk",
                         functx:capitalize-first(
-                              p:reconstruct-wordform(
-                                  ($paradigm//p:paradigm-cell)[1], (: @todo remove hardcoded selector :)
-                                  $paradigm//p:variable-values
-                              ) || "Concrete"
+                              $lemma || "Concrete"
                         ),
                         " : ",
                         (: string-join("Str", " -> ") for $num-of-variables :)
