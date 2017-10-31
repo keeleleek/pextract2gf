@@ -1,6 +1,7 @@
 xquery version "3.1";
 declare namespace map = "http://www.w3.org/2005/xpath-functions/map";
 import module namespace functx = 'http://www.functx.com';
+import module namespace pfile = 'http://keeleleek.ee/pextract/pfile' at 'lib/pfile.xqm';
 declare namespace p = "http://keeleleek.ee/pextract";
 
 
@@ -85,12 +86,7 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
       for $paradigm in ($pfile//p:paradigm)
         let $distinct-variables := distinct-values($paradigm//p:pattern-part[matches(., "\d+")])
         let $num-of-variables := count($distinct-variables)
-        let $first-attested-variables-map := map:merge(
-              for $variable-num in $distinct-variables
-                let $first-attested-variable (: @todo take only first item of this list :)
-                    := $paradigm//p:variable[./p:variable-number = $variable-num]/p:variable-value/data()
-                return map:entry($variable-num, $first-attested-variable)
-        )
+        let $first-attested-variables-map := pfile:get-attested-var-values-map($paradigm)
         let $constants := ($paradigm//p:pattern-part[matches(., "\D+")])
         
         (: generate GF table with each paradigm-cell element :)
@@ -134,7 +130,7 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
                                   (: if non-number then constant else get attestation for variable num :)
                                   if (matches($pattern-part, "\D+"))
                                   then(string('"' || $pattern-part || '"'))
-                                  else(string($first-attested-variables-map?($pattern-part)[1]))
+                                  else(string($first-attested-variables-map?(xs:integer($pattern-part))[1]))
                                 )
                                 else (
                                   (: if non-number then constant else get attestation for variable num :)
@@ -144,7 +140,7 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
                                     (: pattern for making last constant match greedily i.e match the last occurrence :)
                                     let $last-attested-variable := $paradigm-pattern//p:pattern/p:pattern-part[last() - 1]
                                     return
-                                      string($first-attested-variables-map?($pattern-part)[1])
+                                      string($first-attested-variables-map?(xs:integer($pattern-part))[1])
                                       || "@" || '(-(_+"' || $last-attested-variable || '"+_))'
                                   )
                                 )
@@ -161,7 +157,7 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
                               return 
                                 if (matches($pattern-part, "\D+"))
                                 then()
-                                else(string($first-attested-variables-map?($pattern-part)[1]))
+                                else(string($first-attested-variables-map?(xs:integer($pattern-part))[1]))
                             , " "
                         )
                         , " ; " || out:nl(),
@@ -192,7 +188,7 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
                         "\", (: the lambda definition :) 
                         (: tü,tö :)
                         string-join(for $variable in $distinct-variables
-                                          return $first-attested-variables-map?($variable)[1], ","),
+                                          return $first-attested-variables-map?(xs:integer($variable))[1], ","),
                         " -> ",
                         out:nl())
             
@@ -224,7 +220,7 @@ declare function p:serialize-opers ($pattern-map) as xs:string {
                       return 
                         if (matches($pattern-part, "\D+"))
                         then(string('"' || $pattern-part || '"'))
-                        else(string($first-attested-variables-map?($pattern-part)[1]))
+                        else(string($first-attested-variables-map?(xs:integer($pattern-part))[1]))
                     , " + ")
                 )
             , " ; " || out:nl() ) (: end of table content string-join :)
