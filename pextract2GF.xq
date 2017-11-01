@@ -20,16 +20,16 @@ declare namespace p = "http://keeleleek.ee/pextract";
  :)
 declare function p:serialize-params ($params-map) as xs:string {
   string-join(
-    ("param",
-    for $feature in map:keys($params-map)
-      let $values := string-join(
-                                    for $value in $params-map?($feature)
-                                       return if ($translate?($value)) then ($translate?($value)) else ($value),
-                              " | ")
-      return concat(
-        "  ", if($translate?($feature)) then($translate?($feature)) else ($feature), " = ", $values, " ;")
-    )
-  , out:nl()
+      ("param",
+          for $feature in map:keys($params-map)
+            let $values := string-join(
+                                          for $value in $params-map?($feature)
+                                             return if ($translate?($value)) then ($translate?($value)) else ($value),
+                                    " | ")
+            return concat(
+              "  ", if($translate?($feature)) then($translate?($feature)) else ($feature), " = ", $values, " ;")
+      )
+    , out:nl()
   )
 };
 
