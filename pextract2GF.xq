@@ -51,7 +51,7 @@ declare variable $translate := map {
  : @since 1.0.0
  :)
 declare function p:serialize-opers ($pattern-map) as xs:string {
-  let $pfile := doc("examples/vot_noun.tdml")
+  let $pfile := doc("examples/vot_noun.tdml") (: @todo: remove hardcoded file name :)
   
   return
   string-join(
