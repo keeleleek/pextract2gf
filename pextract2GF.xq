@@ -206,7 +206,7 @@ let $pfile := doc(concat("examples/vot_", $pos, ".tdml"))
 (: Generate the map of GF parameter types :)
 (: Collect a map of parameter feature names and values from the pextract file :)
 let $param-labels := distinct-values($pfile//p:msd-description/p:feature/p:name/string())
-let $params := map:merge(
+let $params-map := map:merge(
     for $feature-label in $param-labels
       return map:entry(
         string($feature-label), 
@@ -217,6 +217,6 @@ let $params := map:merge(
 let $paradigm-pattern := "todo" (: @todo: remove this :)
 
 return concat(
-  p:serialize-params($params), out:nl(), out:nl(),
+  p:serialize-params($params-map), out:nl(), out:nl(),
   p:serialize-opers($paradigm-pattern) (: @todo: pass pfile here :)
 )
