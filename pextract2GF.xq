@@ -214,9 +214,9 @@ let $params := map:merge(
       )
 )
 
-let $paradigm-pattern := "todo"
+let $paradigm-pattern := "todo" (: @todo: remove this :)
 
 return concat(
   p:serialize-params($params), out:nl(), out:nl(),
-  p:serialize-opers($paradigm-pattern)
+  p:serialize-opers($paradigm-pattern) (: @todo: pass pfile here :)
 )
