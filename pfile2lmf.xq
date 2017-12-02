@@ -49,7 +49,7 @@ declare function pextract:paradigm-as-lmf-pattern(
                     if(matches($pattern-part, "\d+"))
                     then(
                       (: the case it is a variable number :)
-                      <feat att="operator" val="addVariable" />,
+                      <feat att="operator" val="addAfter" />,
                       <feat att="variableNumber" val="{$pattern-part}" />
                     )
                     else(
