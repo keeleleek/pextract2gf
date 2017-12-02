@@ -28,7 +28,7 @@ declare function pextract:paradigm-as-lmf-pattern(
     <feat att="id" val="{$paradigm-id}" />
     <feat att="comment" val="{$paradigm-comment}" />
     <feat att="example" val="{$paradigm-lemma}" />
-    <feat att="partOfSpeech" val="noun" /> (: @todo hardcoded :)
+    <feat att="partOfSpeech" val="noun" />
     {
       for $cell in $paradigm//pextract:paradigm-cell
         let $msd-feats := pfile:get-cell-msd-map($cell)
