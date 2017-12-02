@@ -42,7 +42,7 @@ declare function pfile:get-attested-var-values-map(
 declare function pfile:get-attested-wordforms(
   $cell as element(pextract:paradigm-cell),
   $attested-values as element(pextract:variable-values)
-) {
+) as xs:string+ {
   let $pattern := $cell/pextract:pattern
   let $wordform-list :=
     for $attested-value-set in $attested-values/pextract:variable-set
@@ -57,3 +57,49 @@ declare function pfile:get-attested-wordforms(
       return $wordform-list
 };
 
+
+
+(:~ Returns all morpho-syntactic descriptors of a given paradigm as a map :)
+declare function pfile:get-paradigm-msd-map(
+  $paradigm as element(pextract:paradigm)
+)
+{
+  let $msds := $paradigm//pextract:msd-description
+  let $msd-map := map:merge(
+    let $keys := distinct-values($msds/pextract:feature/pextract:name)
+    for $key in $keys
+      let $values := distinct-values($msds/pextract:feature[./pextract:name = $key]/pextract:value)
+      return map:entry($key, $values)
+  )
+  return $msd-map
+};
+
+
+
+(:~ Returns all morpho-syntactic descriptors of a given cell as a map :)
+declare function pfile:get-cell-msd-map(
+  $cell as element(pextract:paradigm-cell)
+)
+{
+  let $msds := $cell/pextract:msd-description
+  let $msd-map := map:merge(
+    let $keys := distinct-values($msds/pextract:feature/pextract:name)
+    for $key in $keys
+      let $values := distinct-values($msds/pextract:feature[./pextract:name = $key]/pextract:value)
+      return map:entry($key, $values)
+  )
+  return $msd-map
+};
+
+
+
+
+(:~ Returns all inherent morpho-syntactic descriptors of a given cell as a map :)
+(: @todo: fill this place-holder :)
+declare function pfile:get-inherent-type-msd-map(
+  $cell as element(pextract:paradigm-cell),
+  $type-system
+)
+{
+  
+};

@@ -20,16 +20,16 @@ declare namespace p = "http://keeleleek.ee/pextract";
  :)
 declare function p:serialize-params ($params-map) as xs:string {
   string-join(
-    ("param",
-    for $feature in map:keys($params-map)
-      let $values := string-join(
-                                    for $value in $params-map?($feature)
-                                       return if ($translate?($value)) then ($translate?($value)) else ($value),
-                              " | ")
-      return concat(
-        "  ", if($translate?($feature)) then($translate?($feature)) else ($feature), " = ", $values, " ;")
-    )
-  , out:nl()
+      ("param",
+          for $feature in map:keys($params-map)
+            let $values := string-join(
+                                          for $value in $params-map?($feature)
+                                             return if ($translate?($value)) then ($translate?($value)) else ($value),
+                                    " | ")
+            return concat(
+              "  ", if($translate?($feature)) then($translate?($feature)) else ($feature), " = ", $values, " ;")
+      )
+    , out:nl()
   )
 };
 
@@ -51,7 +51,7 @@ declare variable $translate := map {
  : @since 1.0.0
  :)
 declare function p:serialize-opers ($pattern-map) as xs:string {
-  let $pfile := doc("examples/vot_noun.tdml")
+  let $pfile := doc("examples/vot_noun.tdml") (: @todo: remove hardcoded file name :)
   
   return
   string-join(
@@ -206,7 +206,7 @@ let $pfile := doc(concat("examples/vot_", $pos, ".tdml"))
 (: Generate the map of GF parameter types :)
 (: Collect a map of parameter feature names and values from the pextract file :)
 let $param-labels := distinct-values($pfile//p:msd-description/p:feature/p:name/string())
-let $params := map:merge(
+let $params-map := map:merge(
     for $feature-label in $param-labels
       return map:entry(
         string($feature-label), 
@@ -214,9 +214,9 @@ let $params := map:merge(
       )
 )
 
-let $paradigm-pattern := "todo"
+let $paradigm-pattern := "todo" (: @todo: remove this :)
 
 return concat(
-  p:serialize-params($params), out:nl(), out:nl(),
-  p:serialize-opers($paradigm-pattern)
+  p:serialize-params($params-map), out:nl(), out:nl(),
+  p:serialize-opers($paradigm-pattern) (: @todo: pass pfile here :)
 )
