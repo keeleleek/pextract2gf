@@ -71,5 +71,10 @@ let $lang-code := "vot"
 let $part-of-speech := "noun"
 let $example := doc("examples/vot_" || $part-of-speech || ".tdml")
 
-for $paradigm in $example/pextract:paradigm-file/pextract:paradigm
-  return pextract:paradigm-as-lmf-pattern($paradigm, $part-of-speech)
+return
+  <Lexicon lang="{$lang-code}">
+  {
+    for $paradigm in $example/pextract:paradigm-file/pextract:paradigm
+      return pextract:paradigm-as-lmf-pattern($paradigm, $part-of-speech)
+  }
+  </Lexicon>
