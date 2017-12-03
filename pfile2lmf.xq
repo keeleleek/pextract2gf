@@ -14,7 +14,8 @@ declare namespace lmf = "lmf";
 
 
 declare function pextract:paradigm-as-lmf-pattern(
-  $paradigm as element(pextract:paradigm)
+  $paradigm as element(pextract:paradigm),
+  $part-of-speech as xs:string
 ) as element(ParadigmPattern)
 {
   let $paradigm-lemma := pfile:get-attested-wordforms(
@@ -28,7 +29,7 @@ declare function pextract:paradigm-as-lmf-pattern(
     <feat att="id" val="{$paradigm-id}" />
     <feat att="comment" val="{$paradigm-comment}" />
     <feat att="example" val="{$paradigm-lemma}" />
-    <feat att="partOfSpeech" val="noun" />
+    <feat att="partOfSpeech" val="{$part-of-speech}" />
     {
       for $cell in $paradigm//pextract:paradigm-cell
         let $msd-feats := pfile:get-cell-msd-map($cell)
@@ -66,6 +67,9 @@ declare function pextract:paradigm-as-lmf-pattern(
 };
 
 
-let $example := doc("examples/vot_noun.tdml")
+let $lang-code := "vot"
+let $part-of-speech := "noun"
+let $example := doc("examples/vot_" || $part-of-speech || ".tdml")
+
 for $paradigm in $example/pextract:paradigm-file/pextract:paradigm
-  return pextract:paradigm-as-lmf-pattern($paradigm)
+  return pextract:paradigm-as-lmf-pattern($paradigm, $part-of-speech)
