@@ -24,12 +24,21 @@ declare function pextract:paradigm-as-lmf-pattern(
   )[1]
   let $paradigm-id := "as" || functx:capitalize-first($paradigm-lemma)
   let $paradigm-comment := concat('inflectional paradigm pattern for ', $paradigm-lemma)
+  let $paradigm-attested-variables := pfile:get-attested-var-values-map($paradigm)
   return 
   <ParadigmPattern>
     <feat att="id" val="{$paradigm-id}" />
     <feat att="comment" val="{$paradigm-comment}" />
     <feat att="example" val="{$paradigm-lemma}" />
     <feat att="partOfSpeech" val="{$part-of-speech}" />
+    <AttestedVariableValues>
+      {
+        map:for-each(
+          $paradigm-attested-variables,
+          function ($key, $value) {<feat att="{$key}" val="{$value}" />}
+        )
+      }
+    </AttestedVariableValues>
     {
       for $cell in $paradigm//pextract:paradigm-cell
         let $msd-feats := pfile:get-cell-msd-map($cell)
