@@ -103,3 +103,69 @@ declare function pfile:get-inherent-type-msd-map(
 {
   
 };
+
+
+
+(:~ Represent a pextract paradigm as a LMF Paradigm Pattern :)
+declare function pfile:paradigm-as-lmf-pattern(
+  $paradigm as element(pextract:paradigm),
+  $part-of-speech as xs:string
+) as element(ParadigmPattern)
+{
+  let $paradigm-lemma := pfile:get-attested-wordforms(
+    ($paradigm//pextract:paradigm-cell)[1], (: @todo remove hardcoded selector :)
+    pfile:get-attested-var-values($paradigm)
+  )[1]
+  let $paradigm-id := "as" || functx:capitalize-first($paradigm-lemma)
+  let $paradigm-comment := concat('inflectional paradigm pattern for ', $paradigm-lemma)
+  let $paradigm-attested-variables := pfile:get-attested-var-values-map($paradigm)
+  
+  return 
+  <ParadigmPattern>
+    <feat att="id" val="{$paradigm-id}" />
+    <feat att="comment" val="{$paradigm-comment}" />
+    <feat att="example" val="{$paradigm-lemma}" />
+    <feat att="partOfSpeech" val="{$part-of-speech}" />
+    <AttestedVariableValues>
+      {
+        map:for-each(
+          $paradigm-attested-variables,
+          function ($key, $value) {<feat att="{$key}" val="{$value}" />}
+        )
+      }
+    </AttestedVariableValues>
+    {
+      for $cell in $paradigm//pextract:paradigm-cell
+        let $msd-feats := pfile:get-cell-msd-map($cell)
+        return
+          <TransformSet>
+            <GrammaticalFeatures>
+              {
+                map:for-each(
+                  $msd-feats,
+                  function ($key, $value) {<feat att="{$key}" val="{$value}" />} )
+              }
+            </GrammaticalFeatures>
+            {
+              for $pattern-part in $cell//pextract:pattern/pextract:pattern-part
+                return
+                  <Process>
+                  {
+                    if(matches($pattern-part, "\d+"))
+                    then(
+                      (: the case it is a variable number :)
+                      <feat att="operator" val="addAfter" />,
+                      <feat att="variableNumber" val="{$pattern-part}" />
+                    )
+                    else(
+                      (: the case it is a constant string :)
+                      <feat att="operator" val="addAfter" />,
+                      <feat att="stringValue" val="{$pattern-part}" />
+                    )
+                  }
+                </Process>
+            }
+          </TransformSet>
+    }
+  </ParadigmPattern>
+};
