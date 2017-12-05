@@ -1,7 +1,7 @@
 xquery version "3.1";
 declare namespace map = "http://www.w3.org/2005/xpath-functions/map";
 import module namespace functx = 'http://www.functx.com';
-import module namespace pfile = 'http://keeleleek.ee/pextract/pfile' at 'lib/pfile.xqm';
+import module namespace pfile = 'http://keeleleek.ee/pextract/pfile' at 'pextract-xml/lib/pfile.xqm';
 declare namespace p = "http://keeleleek.ee/pextract";
 
 
